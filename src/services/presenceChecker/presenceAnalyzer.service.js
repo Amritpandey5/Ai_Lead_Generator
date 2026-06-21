@@ -1,4 +1,4 @@
-const Business = require('../../models/business.model')
+
 
 const analyzeBusinesses = (business)=>{
 
@@ -20,7 +20,7 @@ const analyzeBusinesses = (business)=>{
     }
 
     const digitalPresence = {
-        hasWebsite:hasValidValue(business.hasWebsite),
+        hasWebsite:hasValidValue(business.website),
         hasInstagram:hasValidValue(business.socialLinks?.instagram),
         hasFacebook:hasValidValue(business.socialLinks?.facebook),
         hasLinkedin:hasValidValue(business.socialLinks?.linkedin)
