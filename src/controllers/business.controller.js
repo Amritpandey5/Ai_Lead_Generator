@@ -1,5 +1,7 @@
 const Business = require('../models/business.model');
 const { findBusinesses } = require('../services/businessFinder/businessFinder.service')
+const {analyzeBusinesses} = require('../services/presenceChecker/presenceAnalyzer.service')
+const {calculateLeadScore} = require('../services/leadScorer/leadScorer.service')
 
 const businessSearch = async (req, res) => {
     try {
@@ -19,6 +21,9 @@ const businessSearch = async (req, res) => {
         for (let i = 0; i < foundBusinesses.length; i++) {
 
             const business = foundBusinesses[i];
+
+            const analysis = await analyzeBusinesses(business)
+            const leadData = await calculateLeadScore(analysis.digitalPresence)
 
             const exists = await Business.exists({
                 name: business.name,
@@ -55,17 +60,13 @@ const businessSearch = async (req, res) => {
                     linkedin: business.socialLinks?.linkedin || '',
                 },
 
-                digitalPresence: {
-                    hasWebsite: !!business.website,
-                    hasInstagram: !!business.socialLinks?.instagram,
-                    hasFacebook: !!business.socialLinks?.facebook,
-                    hasLinkedin: !!business.socialLinks?.linkedin,
-                },
+                digitalPresence:analysis.digitalPresence,
 
                 source: business.source || 'mock_data',
 
-                leadScore: 0,
-                status: 'new',
+                leadScore: leadData.leadScore,
+                leadCategory:leadData.leadCategory,
+                status: leadData.leadScore >= 50 ? 'qualified' : 'analyzed',
 
                 outreach: {
                     whatsappSent: false,
@@ -74,8 +75,10 @@ const businessSearch = async (req, res) => {
                     notes: ''
                 },
 
-                lastAnalyzedAt
+                lastAnalyzedAt:analysis.analyzedAt
             };
+
+
 
             const createdBusiness = await Business.create(cleanedBusiness);
             savedBusinesses.push(createdBusiness);
@@ -86,9 +89,7 @@ const businessSearch = async (req, res) => {
         }
 
         console.log(
-            `Found: ${foundBusinesses.length},
-            Saved: ${savedCount},
-            Skipped: ${skippedCount}`
+            `Found: ${foundBusinesses.length},\n Saved: ${savedCount},\nSkipped: ${skippedCount}`
         );
 
         res.status(200).json({

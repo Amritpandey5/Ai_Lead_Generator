@@ -73,6 +73,11 @@ const businessSchema = new mongoose.Schema({
         type: Number,
         default: 0
     },
+    leadCategory:{
+        type:String,
+        enum:['cold','warm','hot'],
+        default:'cold'
+    },
     status: {
         type: String,
         trim: true,
