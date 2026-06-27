@@ -26,7 +26,6 @@ const calculateLeadScore  = (digitalPresence)=>{
     else if(leadScore >= 50){
         leadCategory = 'warm'
     }
-
     console.log(leadScore);
 
     return {
