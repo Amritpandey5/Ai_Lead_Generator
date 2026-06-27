@@ -2,6 +2,7 @@ const Business = require('../models/business.model');
 const { findBusinesses } = require('../services/businessFinder/businessFinder.service')
 const {analyzeBusinesses} = require('../services/presenceChecker/presenceAnalyzer.service')
 const {calculateLeadScore} = require('../services/leadScorer/leadScorer.service')
+const {generateOutreachMessage} = require('../services/outreachGenerator/outreachGenerator.service')
 
 const businessSearch = async (req, res) => {
     try {
@@ -24,6 +25,13 @@ const businessSearch = async (req, res) => {
 
             const analysis = await analyzeBusinesses(business)
             const leadData = await calculateLeadScore(analysis.digitalPresence)
+
+            const outReachMessage = generateOutreachMessage({
+                ...business,
+                digitalPresence:analysis.digitalPresence,
+                leadScore:leadData.leadScore,
+                leadCategory:leadData.leadCategory
+            })
 
             const exists = await Business.exists({
                 name: business.name,
@@ -72,6 +80,7 @@ const businessSearch = async (req, res) => {
                     whatsappSent: false,
                     emailSent: false,
                     instagramSent: false,
+                    generatedMessage:outReachMessage,
                     notes: ''
                 },
 
@@ -89,7 +98,7 @@ const businessSearch = async (req, res) => {
         }
 
         console.log(
-            `Found: ${foundBusinesses.length},\n Saved: ${savedCount},\nSkipped: ${skippedCount}`
+            `Found: ${foundBusinesses.length},\nSaved: ${savedCount},\nSkipped: ${skippedCount}`
         );
 
         res.status(200).json({

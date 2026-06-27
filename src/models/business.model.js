@@ -108,6 +108,10 @@ const businessSchema = new mongoose.Schema({
             type:Boolean,
             default:false,
         },
+        generatedMessage:{
+            type:String,
+            default:''
+        },
         lastContactedAt:{
             type:Date
         },
