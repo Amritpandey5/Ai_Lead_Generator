@@ -5,12 +5,17 @@ const { getAllLeads, getHotLeads, getWarmLeads, getColdLeads, getLeadById, updat
 const router = express.Router();
 
 router.get('/leads',getAllLeads)
-router.get('/leads/:id',getLeadById)
+
+router.get('/leads/stats',getLeadStat)
+
+
 router.get('/leads/hot',getHotLeads)
 router.get('/leads/warm',getWarmLeads)
-router.get('leads/cold',getColdLeads)
+router.get('/leads/cold',getColdLeads)
+
+router.get('/leads/:id',getLeadById)
 router.patch('/leads/:id/status',updateStatusOfLead,)
-router.get('/leads/stats',getLeadStat)
+
 
 
 module.exports = router

@@ -4,7 +4,7 @@ const Business = require('../models/business.model')
 
 const getAllLeads = async (req, res) => {
     const businesses = await Business.find();
-    if (businesses.lenght === 0) {
+    if (businesses.length === 0) {
         return res.status(404).json({
             'success': false,
             'count': businesses.length,
@@ -24,7 +24,7 @@ const getHotLeads = async (req, res) => {
     const hotBusinesses = await Business.find({
         leadCategory: 'hot'
     });
-    if (hotBusinesses.lenght === 0) {
+    if (hotBusinesses.length === 0) {
         return res.status(404).json({
             'success': false,
             'count': hotBusinesses.length,
@@ -44,7 +44,7 @@ const getWarmLeads = async (req, res) => {
     const warmBusinesses = await Business.find({
         leadCategory: 'warm'
     });
-    if (warmBusinesses.lenght === 0) {
+    if (warmBusinesses.length === 0) {
         return res.status(404).json({
             'success': false,
             'count': warmBusinesses.length,
@@ -64,7 +64,7 @@ const getColdLeads = async (req, res) => {
     const coldBusinesses = await Business.find({
         leadCategory: 'cold'
     });
-    if (coldBusinesses.lenght === 0) {
+    if (coldBusinesses.length === 0) {
         return res.status(404).json({
             'success': false,
             'count': coldBusinesses.length,
