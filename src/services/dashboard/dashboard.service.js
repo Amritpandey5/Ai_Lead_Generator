@@ -24,11 +24,13 @@ const getDashboardSummary = async()=>{
             $group:{
                 _id:null,
                 averageScore:{
-                    $avg:'leadScore'
+                    $avg:'$leadScore'
                 }
             }
         }
     ])
+
+    const avg = averageLeadScore[0]?.averageScore || 0;
 
     return {
         totalBusinesses,
@@ -40,7 +42,7 @@ const getDashboardSummary = async()=>{
         hotLeads,
         warmLeads,
         coldLeads,
-        averageLeadScore
+        averageLeadScore: Number(avg.toFixed(2))
 
     }
 }
@@ -52,7 +54,109 @@ const getRecentBusinesses = async()=>{
     return recentBusinesses
 }
 
+const getBusinessTypesDistribution= async()=>{
+    const businesses = await Business.aggregate([
+        {
+            $group:{
+                _id:"$businessType",
+                count:{
+                    $sum:1
+                }
+            }
+        }
+    ])
+    return businesses
+}
+
+const getCityDistribution = async(city)=>{
+    const businesses = await Business.aggregate([
+        {
+            $group:{
+                _id:"$city",
+                count:{
+                    $sum:1
+                }
+            }
+        }
+    ])
+
+    return businesses
+
+}
+
+const getMonthlyGrowth = async()=>{
+    const businesses = await Business.aggregate([
+        {
+            $group:{
+                _id:{
+                    year:{$year:"$createdAt"},
+                    month:{$month:"$createdAt"}
+                },
+                count:{
+                    $sum:1
+                }
+            }
+        },
+        {
+            $sort:{
+                "_id.year":1,
+                "_id.month":1
+            }
+        }
+    ])
+    return businesses
+}
+
+const checkDigitalPresence = async()=>{
+    const totalBusiness = await Business.countDocuments();
+
+    const website = await Business.countDocuments({
+        "digitalPresence.hasWebsite":true
+    })
+
+    const instagram = await Business.countDocuments({
+        "digitalPresence.hasInstagram":true,
+    })
+
+    const facebook = await Business.countDocuments({
+        "digitalPresence.hasFacebook":true
+    })
+
+    const linkedin = await Business.countDocuments({
+        "digitalPresence.hasLinkedin":true
+    })
+
+    return {
+        totalBusiness,
+
+        website:{
+            present:website,
+            missing:totalBusiness - website
+        },
+
+        instagram:{
+            present:instagram,
+            missing:totalBusiness - instagram
+        },
+        
+        facebook:{
+            present:facebook,
+            missing:totalBusiness - facebook
+        },
+
+        linkedin:{
+            present:linkedin,
+            missing:totalBusiness - linkedin
+        }
+
+    }
+}
+
 module.exports = {
     getDashboardSummary,
-    getRecentBusinesses
+    getRecentBusinesses,
+    getBusinessTypesDistribution,
+    getCityDistribution,
+    getMonthlyGrowth,
+    checkDigitalPresence
 }
