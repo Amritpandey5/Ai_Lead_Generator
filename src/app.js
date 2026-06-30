@@ -3,6 +3,7 @@ const express = require('express')
 const connectDB = require('./config/db')
 const businessRoutes = require('./routes/business.route');
 const leadRoutes = require('./routes/lead.routes');
+const dashboardRoutes = require('./routes/dashboard.routes')
 const outReachRoutes = require('./routes/outreach.routes')
 
 // PORT
@@ -20,6 +21,7 @@ app.use(express.json())
 app.use('/api',businessRoutes);
 app.use('/api',leadRoutes);
 app.use('/api',outReachRoutes);
+app.use('/api',dashboardRoutes)
 
 app.get('/api/health',async(req,res)=>{
     res.status(200).json({
