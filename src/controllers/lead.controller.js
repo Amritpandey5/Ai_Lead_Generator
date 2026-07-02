@@ -1,4 +1,26 @@
 const Business = require('../models/business.model')
+const {searchLead} = require('../services/leadSearch/leadSearch.service')
+
+
+const searchLeads = async (req, res) => {
+    try{
+        const result = await searchLead(req.query)
+        res.status(200).json({
+            'success': true,
+            'count': result.businesses.length,
+            'pagination':result.pagination,
+            'data': result.businesses
+        })
+    }
+    catch(err){
+        res.status(500).json({
+            'success': false,
+            'message': err.message
+        })
+    }
+
+        
+}
 
 // Get All Leads
 
@@ -99,10 +121,14 @@ const getLeadById = async (req, res) => {
 const updateStatusOfLead = async(req, res) => {
 
     const { status } = req.body;
+
     const lead = await Business.findByIdAndUpdate(
         req.params.id,
         { status },
-        { new: true }
+        { 
+            new: true,
+            runValidators: true
+        }
     );
     if(!lead){
         return res.status(404).json({
@@ -153,6 +179,7 @@ const getLeadStat = async (req, res) => {
 }
 
 module.exports = {
+    searchLeads,
     getAllLeads,
     getHotLeads,
     getWarmLeads,

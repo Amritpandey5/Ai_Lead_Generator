@@ -1,12 +1,13 @@
 const express = require('express');
 
-const { getAllLeads, getHotLeads, getWarmLeads, getColdLeads, getLeadById, updateStatusOfLead, getLeadStat } = require('../controllers/lead.controller')
+const { getAllLeads, getHotLeads, getWarmLeads, getColdLeads, getLeadById, updateStatusOfLead, getLeadStat,searchLeads } = require('../controllers/lead.controller')
 
 const router = express.Router();
 
 router.get('/leads',getAllLeads)
 
 router.get('/leads/stats',getLeadStat)
+router.get('/leads/search',searchLeads)
 
 
 router.get('/leads/hot',getHotLeads)
